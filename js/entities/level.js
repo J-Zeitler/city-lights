@@ -4,15 +4,18 @@
  * Level module, creates a new Level to put lamps/lights into.
  * @param {Game}   game     Phaser game object
  * @param {String} texture  Name of the texture to use as level background
+ * @param {Object} options  (optional) options for this level
  */
-var Level = function (game, texture) {
+var Level = function (state, texture, options) {
   var self = this;
   this.lamps = [];
-  this.game = game;
+  this.state = state;
 
-  this.sprite = game.add.sprite(
-    game.world.centerX,
-    game.world.centerY,
+  this.lampsLimit = options ? options.lampsLimit || false : false;
+
+  this.sprite = state.add.sprite(
+    state.world.centerX,
+    state.world.centerY,
     texture
   );
 
@@ -20,7 +23,12 @@ var Level = function (game, texture) {
   this.sprite.inputEnabled = true;
 
   this.sprite.events.onInputDown.add(function () {
-    self.lamps.push(new Lamp(self.game));
+    self.lamps.forEach(function (l) {
+      l.hideHandles();
+    });
+
+    if (self.lamps.length < self.lampsLimit)
+      self.lamps.push(new Lamp(self.state, texture + 'BW'));
   });
 }
 
@@ -30,6 +38,6 @@ var Level = function (game, texture) {
 Level.prototype.update = function () {
   var self = this;
   this.lamps.forEach(function (l) {
-    l.update(self.game);
+    l.update(self.state);
   });
 }

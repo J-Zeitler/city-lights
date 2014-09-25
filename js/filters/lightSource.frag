@@ -36,7 +36,7 @@ void main(void) {
       lightColor.a *= sample.r;
     }
 
-    lightColor.a *= 1.0 - d/radius;
+    lightColor.a *= 1.0 - (d/radius)*(d/radius);
     gl_FragColor = lightColor;
   }
 }
