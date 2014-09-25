@@ -1,55 +1,28 @@
-var game = new Phaser.Game(
-  480, 320, Phaser.AUTO, '', {
-    preload: preload,
-    create: create,
-    update: update,
-    render: render
+'use strict';
+
+var game = new Phaser.Game(480, 320, Phaser.AUTO, '', {
+
+  preload: function () {
+    this.lamps = [];
+    this.load.image('testLevelBW', 'assets/testLevelBW.png');
+    this.load.image('testLevel', 'assets/testLevel.png');
+    this.load.image('lamp', 'assets/lamp.png');
+    this.load.script('lightSource', 'js/filters/lightSource.js');
+    this.load.text('light-frag', 'js/filters/lightSource.frag');
+    this.load.script('Lamp', 'js/entities/lamp.js');
+    this.load.script('Level', 'js/entities/level.js');
+    this.time.advancedTiming = true;
+  },
+
+  create: function () {
+    this.level = new Level(this, 'testLevel');
+  },
+
+  update: function () {
+    this.level.update();
+  },
+
+  render: function () {
+    game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
   }
-);
-
-var filter;
-
-function preload () {
-  game.load.image('testLevelBW', 'testLevelBW.png');
-  game.load.image('testLevel', 'testLevel.png');
-  game.load.script('lightSource', 'js/filters/lightSource.js');
-  game.load.text('light-frag', 'js/filters/lightSource.frag');
-  game.time.advancedTiming = true;
-}
-
-function create () {
-  var level = game.add.sprite(
-    game.world.centerX,
-    game.world.centerY,
-    'testLevel'
-  );
-  level.anchor.setTo(0.5, 0.5);
-
-  var light = game.add.sprite(
-    game.world.centerX,
-    game.world.centerY,
-    'testLevelBW'
-  );
-  light.anchor.setTo(0.5, 0.5);
-  light.blendMode = PIXI.blendModes.ADD;
-
-  filter = game.add.filter(
-    'LightSource', 480, 320, game.cache.getText('light-frag')
-  );
-
-  filter.radius = 100;
-  filter.position = {x: 480/2.0, y: 320/2.0};
-
-  light.filters = [filter];
-}
-
-function update() {
-  filter.position = {
-    x: game.input.mousePointer.x,
-    y: 320 - game.input.mousePointer.y
-  };
-}
-
-function render () {
-  game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
-}
+});

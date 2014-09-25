@@ -19,17 +19,24 @@ vec2 posToTex (vec2 pos) {
 void main(void) {
   vec2 samplePos = texToPos(vTextureCoord);
 
-  vec2 toCenterTex = posToTex(position - samplePos);
-  vec2 posTex = posToTex(position);
+  vec2 toCenterPos = position - samplePos;
+  float d = length(toCenterPos);
+  if (d > radius) {
+    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+  } else {
+    vec2 toCenterTex = posToTex(toCenterPos);
+    vec2 posTex = posToTex(position);
 
-  bool lit = true;
+    bool lit = true;
 
-  // Raycast :|
-  vec4 lightColor = vec4(1.0, 1.0, 0.0, 0.7);
-  for (float i = 0.0; i < 1.0; i += 0.005) {
-    vec4 sample = texture2D(uSampler, vTextureCoord + toCenterTex*i);
-    lightColor.a *= sample.r;
+    // Raycast :|
+    vec4 lightColor = vec4(1.0, 1.0, 0.3, 0.7);
+    for (float i = 0.0; i < 1.0; i += 0.005) {
+      vec4 sample = texture2D(uSampler, vTextureCoord + toCenterTex*i);
+      lightColor.a *= sample.r;
+    }
+
+    lightColor.a *= 1.0 - d/radius;
+    gl_FragColor = lightColor;
   }
-
-  gl_FragColor = lightColor;
 }
