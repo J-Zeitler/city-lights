@@ -2,15 +2,19 @@
 
 /**
  * Lamp module, spawns a new Lamp at mouse pos or optionally specified pos
- * @param {State}               state     Phaser state object
- * @param {String}             levelBW  binary version of the level texture
- * @param {x: float, y: float} spawnPos optional spawn pos
+ * @param {State}  state    Phaser state object
+ * @param {String} levelBW  binary version of the level texture
+ * @param {Object} options  optional params
  */
-var Lamp = function (state, levelBW, spawnPos) {
+var Lamp = function (state, levelBW, options) {
   var self = this;
-  this.radius = 150; // hard coded for now
+  this.opts = options || {};
+  this.radius = this.opts.radius || Math.sqrt(this.opts.area/Math.PI) || 150;
+  this.area = this.opts.area || this.radius*this.radius*Math.PI;
+  this.handlesOffset = this.opts.handlesOffset || 50;
+  var spawnPos;
 
-  if (!spawnPos) {
+  if (!this.opts.spawnPos) {
     spawnPos = state.input.mousePointer;
   }
 
@@ -26,12 +30,13 @@ var Lamp = function (state, levelBW, spawnPos) {
   this.handles = {};
   for (var i = 0; i < 2; i++) {
     this.handles[i] = state.add.sprite(
-      spawnPos.x + this.radius,
+      spawnPos.x + this.handlesOffset,
       spawnPos.y,
       'lamp');
     this.handles[i].anchor.setTo(0.5, 0.5);
-    this.handles[i].rotation = 0;
   };
+  this.handles[0].rotation = 0;
+  this.handles[1].rotation = 2*Math.PI;
 
   console.log(this.handles);
   console.log(this.bulb);
@@ -55,6 +60,10 @@ var Lamp = function (state, levelBW, spawnPos) {
     x: spawnPos.x,
     y: 320 - spawnPos.y
   };
+  filter.handlesRot = {
+    x: this.handles[0].rotation,
+    y: this.handles[1].rotation
+  }
 
   this.light.filters = [filter];
 
@@ -77,7 +86,7 @@ Lamp.prototype.update = function (state, movePos) {
       y: 320 - movePos.y
     };
 
-    this.moveHandles();
+    this.updateHandlesPosition();
   } else if (this.handles[0].needsUpdate) {
     this.rotateHandleTowards(state.input.mousePointer, 0);
   } else if (this.handles[1].needsUpdate) {
@@ -85,9 +94,9 @@ Lamp.prototype.update = function (state, movePos) {
   }
 }
 
-Lamp.prototype.moveHandles = function () {
+Lamp.prototype.updateHandlesPosition = function () {
   for (var i = 0; i < 2; i++) {
-    var xAxis = new Phaser.Point(this.radius, 0.0);
+    var xAxis = new Phaser.Point(this.handlesOffset, 0.0);
     var target = Phaser.Point.rotate(xAxis, 0, 0, this.handles[i].rotation);
     this.handles[i].reset(
       this.bulb.world.x + target.x,
@@ -106,15 +115,46 @@ Lamp.prototype.rotateHandleTowards = function (point, i) {
   );
   var centerToHandleNorm = centerToHandle.normalize();
 
-  // force handle to be on the edge
-  this.handles[i].reset(
-    this.bulb.world.x + centerToHandleNorm.x*this.radius,
-    this.bulb.world.y + centerToHandleNorm.y*this.radius
-  );
-
   // Angle to positive x axis determines rotation
-  //                                   dot: 1.0*x + 0.0*y     determine sign
-  this.handles[i].rotation = Math.acos(centerToHandleNorm.x)*(centerToHandleNorm.y < 0 ? -1 : 1);
+  var iPreRot = this.handles[i].rotation;
+
+  // dot product in two steps
+  var iPostRot = Math.acos(centerToHandleNorm.x);
+  if (centerToHandleNorm.y < 0) {
+    iPostRot = 2*Math.PI - iPostRot;
+  }
+
+  // Handle should not pass the other handle
+  var j = +!i; // 0 -> 1, 1 -> 0
+  var jRot = this.handles[j].rotation;
+  this.handles[i].rotation = iPostRot;
+
+  var diff = this.handles[1].rotation - this.handles[0].rotation;
+  if (diff < 0) {
+    diff += 2*Math.PI;
+  }
+
+  if (diff > 2*Math.PI || diff < Math.PI*0.25) {
+    this.handles[i].rotation = iPreRot;
+  } else {
+    // update radius
+    this.radius = Math.sqrt(2*this.area/diff);
+    // force handle to be on the edge
+    this.handles[i].reset(
+      this.bulb.world.x + centerToHandleNorm.x*50,
+      this.bulb.world.y + centerToHandleNorm.y*50
+    );
+    // propagate to shader
+    this.updateFilter();
+  }
+}
+
+Lamp.prototype.updateFilter = function () {
+  this.light.filters[0].handlesRot = {
+    x: this.handles[0].rotation,
+    y: this.handles[1].rotation
+  };
+  this.light.filters[0].radius = this.radius;
 }
 
 /**
