@@ -21,15 +21,29 @@ vec2 posToTex (vec2 pos) {
  * From:
  * http://stackoverflow.com/questions/11406189/determine-if-angle-lies-between-2-other-angles
  */
-bool is_angle_between(float target, float angle1, float angle2) {
+float getAngleBetween(float target, float angle1, float angle2) {
   float PI = 3.1415;
+
+  float diff = abs(angle2 - angle1);
+  if (diff < 0.1 || diff > 1.9*PI) {
+    return 1.0;
+  }
+
   float rAngle = mod((mod((angle2 - angle1),(2.0*PI)) + 2.0*PI), 2.0*PI);
+
+  float blur = 20.0;
 
   // through zero?
   if (angle1 <= angle2)
-    return target >= angle1 && target <= angle2;
-  else
-    return target >= angle1 || target <= angle2;
+    return min(
+      clamp((target - angle1)*blur, 0.0, 1.0),
+      clamp((angle2 - target)*blur, 0.0, 1.0)
+    );
+  else if (target >= angle1) {
+    return clamp((target - angle1)*blur, 0.0, 1.0);
+  } else { // target <= angle2 ?
+    return clamp((angle2 - target)*blur, 0.0, 1.0);
+  }
 }
 
 void main(void) {
@@ -43,10 +57,13 @@ void main(void) {
     sampleAngle = 2.0*3.14 - sampleAngle;
   }
 
-  bool angleBetween = is_angle_between(sampleAngle, handlesRot.x, handlesRot.y);
+  float angleBetween = getAngleBetween(sampleAngle, handlesRot.x, handlesRot.y);
 
   // Check if inside cone
-  if (d > radius || !angleBetween) {
+  vec4 lightColor = texture2D(uSampler, vTextureCoord);
+  lightColor.a = 0.7*angleBetween;
+  lightColor.b *= 0.7;
+  if (d > radius || lightColor.a < 0.1) {
     gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
   } else {
     vec2 toCenterTex = posToTex(toCenterPos);
@@ -55,10 +72,9 @@ void main(void) {
     bool lit = true;
 
     // Raycast :|
-    vec4 lightColor = vec4(1.0, 1.0, 0.3, 0.7);
     for (float i = 0.0; i < 1.0; i += 0.005) {
       vec4 sample = texture2D(uSampler, vTextureCoord + toCenterTex*i);
-      lightColor.a *= sample.r;
+      lightColor.a *= sample.a;
     }
 
     lightColor.a *= 1.0 - (d/radius)*(d/radius);

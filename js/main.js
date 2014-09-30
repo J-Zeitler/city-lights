@@ -4,6 +4,7 @@ var game = new Phaser.Game(480, 320, Phaser.AUTO, 'City Lights', {
   preload: function () {
     // Load entities
     this.load.image('lamp', 'assets/lamp.png');
+    this.load.image('handle', 'assets/handle.png');
     this.load.script('lightSource', 'js/filters/lightSource.js');
     this.load.text('light-frag', 'js/filters/lightSource.frag');
     this.load.script('Lamp', 'js/entities/lamp.js');

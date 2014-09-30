@@ -32,7 +32,7 @@ var Lamp = function (state, levelBW, options) {
     this.handles[i] = state.add.sprite(
       spawnPos.x + this.handlesOffset,
       spawnPos.y,
-      'lamp');
+      'handle');
     this.handles[i].anchor.setTo(0.5, 0.5);
   };
   this.handles[0].rotation = 0;

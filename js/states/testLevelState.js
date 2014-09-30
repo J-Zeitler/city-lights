@@ -4,8 +4,8 @@ var TestLevelState = function (game) { };
 
 TestLevelState.prototype = {
   preload: function () {
-    this.load.image('testLevelBW', 'assets/testLevelBW.png');
-    this.load.image('testLevel', 'assets/testLevel.png');
+    this.load.image('black', 'assets/levels/black.png');
+    this.load.image('testLevel', 'assets/levels/testLevel.png');
   },
 
   create: function () {

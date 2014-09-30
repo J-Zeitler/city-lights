@@ -16,7 +16,7 @@ var Level = function (state, texture, options) {
   this.sprite = state.add.sprite(
     state.world.centerX,
     state.world.centerY,
-    texture
+    'black'
   );
 
   this.sprite.anchor.setTo(0.5, 0.5);
@@ -28,7 +28,7 @@ var Level = function (state, texture, options) {
     });
 
     if (self.lamps.length < self.lampsLimit)
-      self.lamps.push(new Lamp(self.state, texture + 'BW'));
+      self.lamps.push(new Lamp(self.state, texture));
   });
 }
 
