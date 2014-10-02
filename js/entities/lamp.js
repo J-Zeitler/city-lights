@@ -3,25 +3,26 @@
 /**
  * Lamp module, spawns a new Lamp at mouse pos or optionally specified pos
  * @param {State}  state    Phaser state object
- * @param {String} levelBW  binary version of the level texture
+ * @param {String} levelTexture  binary version of the level texture
  * @param {Object} options  optional params
  */
-var Lamp = function (state, levelBW, options) {
+var Lamp = function (state, levelTexture, options) {
   var self = this;
+
+  console.log('lamp created, opts:', state, levelTexture, options);
+
+  // optionals
   this.opts = options || {};
   this.radius = this.opts.radius || Math.sqrt(this.opts.area/Math.PI) || 150;
   this.area = this.opts.area || this.radius*this.radius*Math.PI;
   this.handlesOffset = this.opts.handlesOffset || 50;
-  var spawnPos;
-
-  if (!this.opts.spawnPos) {
-    spawnPos = state.input.mousePointer;
-  }
+  this.handlesOff = this.opts.handlesOff || false;
+  this.spawnPos = this.opts.spawnPos || state.input.mousePointer;
 
   // bulb in the middle
   this.bulb = state.add.sprite(
-    spawnPos.x,
-    spawnPos.y,
+    this.spawnPos.x,
+    this.spawnPos.y,
     'lamp'
   );
   this.bulb.anchor.setTo(0.5, 0.5);
@@ -30,8 +31,8 @@ var Lamp = function (state, levelBW, options) {
   this.handles = {};
   for (var i = 0; i < 2; i++) {
     this.handles[i] = state.add.sprite(
-      spawnPos.x + this.handlesOffset,
-      spawnPos.y,
+      this.spawnPos.x + this.handlesOffset,
+      this.spawnPos.y,
       'handle');
     this.handles[i].anchor.setTo(0.5, 0.5);
   };
@@ -46,7 +47,7 @@ var Lamp = function (state, levelBW, options) {
   this.light = state.add.sprite(
     state.world.centerX,
     state.world.centerY,
-    levelBW
+    levelTexture
   );
   this.light.anchor.setTo(0.5, 0.5);
   this.light.blendMode = PIXI.blendModes.ADD;
@@ -57,8 +58,8 @@ var Lamp = function (state, levelBW, options) {
 
   filter.radius = this.radius;
   filter.position = {
-    x: spawnPos.x,
-    y: 320 - spawnPos.y
+    x: this.spawnPos.x,
+    y: 320 - this.spawnPos.y
   };
   filter.handlesRot = {
     x: this.handles[0].rotation,
@@ -68,6 +69,9 @@ var Lamp = function (state, levelBW, options) {
   this.light.filters = [filter];
 
   this._initEventListeners();
+  if (this.handlesOff) {
+    this.hideHandles();
+  }
 }
 
 /**
@@ -103,6 +107,12 @@ Lamp.prototype.updateHandlesPosition = function () {
       this.bulb.world.y + target.y
     );
   };
+
+  // Handles are shown by "reset" above.
+  // TODO: Find a better reset method
+  if (this.handlesOff) {
+    this.hideHandles();
+  }
 }
 
 /**
@@ -170,7 +180,9 @@ Lamp.prototype._initEventListeners = function () {
   this.bulb.input.enableDrag(true);
 
   this.bulb.events.onInputDown.add(function () {
-    self.showHandles();
+    if (!(self.handlesOff)) {
+      self.showHandles();
+    }
   });
 
   this.bulb.events.onDragStart.add(function () {
