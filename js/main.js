@@ -21,8 +21,9 @@ var game = new Phaser.Game(480, 320, Phaser.AUTO, 'City Lights', {
 
     // Load states
     this.load.script('MenuState', 'js/states/menuState.js');
-    this.load.script('TestLevelState', 'js/states/testLevelState.js');
     this.load.script('Level0State', 'js/states/level0State.js');
+    this.load.script('Level1State', 'js/states/level1State.js');
+    this.load.script('TestLevelState', 'js/states/testLevelState.js');
 
     this.time.advancedTiming = true;
   },
@@ -31,6 +32,7 @@ var game = new Phaser.Game(480, 320, Phaser.AUTO, 'City Lights', {
     // Attach states
     this.state.add('MenuState', MenuState);
     this.state.add('Level0State', Level0State);
+    this.state.add('Level1State', Level1State);
     this.state.add('TestLevelState', TestLevelState);
 
     this.state.start('Level0State');

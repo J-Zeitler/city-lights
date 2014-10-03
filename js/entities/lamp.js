@@ -9,7 +9,7 @@
 var Lamp = function (state, levelTexture, options) {
   var self = this;
 
-  console.log('lamp created, opts:', state, levelTexture, options);
+  // console.log('lamp created, opts:', state, levelTexture, options);
 
   // optionals
   this.opts = options || {};
@@ -39,8 +39,8 @@ var Lamp = function (state, levelTexture, options) {
   this.handles[0].rotation = 0;
   this.handles[1].rotation = 2*Math.PI;
 
-  console.log(this.handles);
-  console.log(this.bulb);
+  // console.log(this.handles);
+  // console.log(this.bulb);
 
 
   // light filter/shader

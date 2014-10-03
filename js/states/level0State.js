@@ -11,7 +11,7 @@ Level0State.prototype = {
   create: function () {
     var self = this;
 
-    this.state.add('TestLevelState', TestLevelState);
+    this.state.add('Level1State', Level1State);
 
     this.level = new Level(this, 'level0', {
       lampsLimit: 1,
@@ -20,7 +20,6 @@ Level0State.prototype = {
       lampsLocked: true
     });
 
-    this.createNextButton();
     this.checkpoint0();
   },
 
@@ -46,7 +45,7 @@ Level0State.prototype = {
     this.nextButton.input.useHandCursor = true;
     this.nextButton.events.onInputDown.add(function () {
       console.log("next level");
-      self.game.state.start('TestLevelState');
+      self.game.state.start('Level1State');
     });
   }
 };
@@ -66,10 +65,12 @@ Level0State.prototype.checkpoint0 = function () {
 Level0State.prototype.checkpoint1 = function () {
   this.pulser = new Pulser(this);
   this.level.unlockLamps();
+  this.createNextButton();
   this.level.sprite.events.onInputDown.add(this.checkpoint2, this);
 };
 
 Level0State.prototype.checkpoint2 = function () {
+  this.level.sprite.events.onInputDown.remove(this.checkpoint2, this);
   this.pulser.sprite.destroy(true);
   this.dBox.box.destroy(true);
   this.dBox = new DialogueBox(
