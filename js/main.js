@@ -1,6 +1,6 @@
 'use strict';
 
-var game = new Phaser.Game(480, 320, Phaser.AUTO, 'City Lights', {
+var game = new Phaser.Game(480, 320, Phaser.WEBGL, 'City Lights', {
   preload: function () {
     this.load.script('defaultFont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
 
@@ -18,6 +18,7 @@ var game = new Phaser.Game(480, 320, Phaser.AUTO, 'City Lights', {
     this.load.script('Level', 'js/entities/level.js');
     this.load.script('Pulser', 'js/entities/pulser.js');
     this.load.script('DialogueBox', 'js/entities/dialogueBox.js');
+    this.load.script('ScoreKeeper', 'js/entities/scoreKeeper.js');
 
     // Load states
     this.load.script('MenuState', 'js/states/menuState.js');
@@ -35,7 +36,7 @@ var game = new Phaser.Game(480, 320, Phaser.AUTO, 'City Lights', {
     this.state.add('Level1State', Level1State);
     this.state.add('TestLevelState', TestLevelState);
 
-    this.state.start('Level0State');
+    this.state.start('TestLevelState');
   },
 
   update: function () {
@@ -44,3 +45,5 @@ var game = new Phaser.Game(480, 320, Phaser.AUTO, 'City Lights', {
   render: function () {
   }
 });
+
+game.preserveDrawingBuffer = true;

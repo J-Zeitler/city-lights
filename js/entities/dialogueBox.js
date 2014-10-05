@@ -51,12 +51,17 @@ DialogueBox.prototype.reveal = function () {
   }
 };
 
-DialogueBox.prototype.onRevealed = function (callback, context) {
-  this.subscribers.push({callback: callback, context: context});
+/**
+ * Observer utils
+ * @param  {Function} fn  callback
+ * @param  {Object}   ctx callback context
+ */
+DialogueBox.prototype.onRevealed = function (fn, ctx) {
+  this.subscribers.push({fn: fn, ctx: ctx});
 };
 
 DialogueBox.prototype._notify = function () {
   this.subscribers.forEach(function (s) {
-    s.callback.call(s.context);
+    s.fn.call(s.ctx);
   });
 };

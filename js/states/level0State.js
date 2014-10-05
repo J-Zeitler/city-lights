@@ -17,7 +17,7 @@ Level0State.prototype = {
       lampsLimit: 1,
       lightRadius: 175,
       handlesOff: true,
-      lampsLocked: true
+      lampsLocked: true,
     });
 
     this.checkpoint0();

@@ -379,82 +379,93 @@ URL: https://github.com/Huddle/Resemble.js
       var targetPix = imgd.data;
 
       var mismatchCount = 0;
+      var fullAlphaPixels = 0;
 
       var time = Date.now();
 
       var skip;
 
-      if(!!largeImageThreshold && ignoreAntialiasing && (width > largeImageThreshold || height > largeImageThreshold)){
-        skip = 6;
-      }
+      // if(!!largeImageThreshold && ignoreAntialiasing && (width > largeImageThreshold || height > largeImageThreshold)){
+      //   skip = 6;
+      // }
 
       loop(height, width, function(verticalPos, horizontalPos){
 
-        if(skip){ // only skip if the image isn't small
-          if(verticalPos % skip === 0 || horizontalPos % skip === 0){
-            return;
-          }
-        }
+        // if(skip){ // only skip if the image isn't small
+        //   if(verticalPos % skip === 0 || horizontalPos % skip === 0){
+        //     return;
+        //   }
+        // }
 
         var offset = (verticalPos*width + horizontalPos) * 4;
         var pixel1 = getPixelInfo(data1, offset, 1);
         var pixel2 = getPixelInfo(data2, offset, 2);
 
-        if(pixel1 === null || pixel2 === null){
-          return;
-        }
+        // if(pixel1 === null || pixel2 === null){
+        //   return;
+        // }
 
-        if (ignoreColors){
+        /******************************
+         * H4xX3d by City-Lights
+         * (compare alpha vs non-black)
+         ******************************/
 
-          addBrightnessInfo(pixel1);
-          addBrightnessInfo(pixel2);
+        if (pixel1.a < 1.0) return; // outside of level
+        ++fullAlphaPixels;
+        var nonBlack = pixel2.r*pixel2.g*pixel2.b;
+        mismatchCount += nonBlack ? 0 : 1;
 
-          if( isPixelBrightnessSimilar(pixel1, pixel2) ){
-            copyGrayScalePixel(targetPix, offset, pixel2);
-          } else {
-            errorPixel(targetPix, offset, pixel1, pixel2);
-            mismatchCount++;
-          }
-          return;
-        }
+        // if (ignoreColors){
 
-        if( isRGBSimilar(pixel1, pixel2) ){
-          copyPixel(targetPix, offset, pixel1, pixel2);
+        //   addBrightnessInfo(pixel1);
+        //   addBrightnessInfo(pixel2);
 
-        } else if( ignoreAntialiasing && (
-            addBrightnessInfo(pixel1), // jit pixel info augmentation looks a little weird, sorry.
-            addBrightnessInfo(pixel2),
-            isAntialiased(pixel1, data1, 1, verticalPos, horizontalPos, width) ||
-            isAntialiased(pixel2, data2, 2, verticalPos, horizontalPos, width)
-          )){
+        //   if( isPixelBrightnessSimilar(pixel1, pixel2) ){
+        //     copyGrayScalePixel(targetPix, offset, pixel2);
+        //   } else {
+        //     errorPixel(targetPix, offset, pixel1, pixel2);
+        //     mismatchCount++;
+        //   }
+        //   return;
+        // }
 
-          if( isPixelBrightnessSimilar(pixel1, pixel2) ){
-            copyGrayScalePixel(targetPix, offset, pixel2);
-          } else {
-            errorPixel(targetPix, offset, pixel1, pixel2);
-            mismatchCount++;
-          }
-        } else {
-          errorPixel(targetPix, offset, pixel1, pixel2);
-          mismatchCount++;
-        }
+        // if( isRGBSimilar(pixel1, pixel2) ){
+        //   copyPixel(targetPix, offset, pixel1, pixel2);
+
+        // } else if( ignoreAntialiasing && (
+        //     addBrightnessInfo(pixel1), // jit pixel info augmentation looks a little weird, sorry.
+        //     addBrightnessInfo(pixel2),
+        //     isAntialiased(pixel1, data1, 1, verticalPos, horizontalPos, width) ||
+        //     isAntialiased(pixel2, data2, 2, verticalPos, horizontalPos, width)
+        //   )){
+
+        //   if( isPixelBrightnessSimilar(pixel1, pixel2) ){
+        //     copyGrayScalePixel(targetPix, offset, pixel2);
+        //   } else {
+        //     errorPixel(targetPix, offset, pixel1, pixel2);
+        //     mismatchCount++;
+        //   }
+        // } else {
+        //   errorPixel(targetPix, offset, pixel1, pixel2);
+        //   mismatchCount++;
+        // }
 
       });
 
-      data.misMatchPercentage = (mismatchCount / (height*width) * 100).toFixed(2);
+      data.misMatchPercentage = (mismatchCount / fullAlphaPixels * 100).toFixed(2);
       data.analysisTime = Date.now() - time;
 
-      data.getImageDataUrl = function(text){
-        var barHeight = 0;
+      // data.getImageDataUrl = function(text){
+      //   var barHeight = 0;
 
-        if(text){
-          barHeight = addLabel(text,context,hiddenCanvas);
-        }
+      //   if(text){
+      //     barHeight = addLabel(text,context,hiddenCanvas);
+      //   }
 
-        context.putImageData(imgd, 0, barHeight);
+      //   context.putImageData(imgd, 0, barHeight);
 
-        return hiddenCanvas.toDataURL("image/png");
-      };
+      //   return hiddenCanvas.toDataURL("image/png");
+      // };
     }
 
     function addLabel(text, context, hiddenCanvas){

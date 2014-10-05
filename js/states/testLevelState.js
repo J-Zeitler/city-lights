@@ -12,6 +12,7 @@ TestLevelState.prototype = {
     this.level = new Level(this, 'testLevel', {
       lampsLimit: 3
     });
+    this.scoreKeeper = new ScoreKeeper(this, 'testLevel');
   },
 
   update: function () {
@@ -20,5 +21,6 @@ TestLevelState.prototype = {
 
   render: function () {
     game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
+    game.debug.text(this.scoreKeeper.score + '%' || '--', 200, 14, "#00ff00");
   }
 };

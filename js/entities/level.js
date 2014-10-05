@@ -12,10 +12,11 @@ var Level = function (state, texture, options) {
   this.state = state;
   this.texture = texture;
 
-  this.lampsLimit = options ? options.lampsLimit || false : false;
-  this.lightRadius = options ? options.lightRadius || false : false;
-  this.handlesOff = options ? options.handlesOff || false : false;
-  this.lampsLocked = options ? options.lampsLocked || false : false;
+  var opts = options || {};
+  this.lampsLimit = opts.lampsLimit || false;
+  this.lightRadius = opts.lightRadius || false;
+  this.handlesOff = opts.handlesOff || false;
+  this.lampsLocked = opts.lampsLocked || false;
 
   this.sprite = state.add.sprite(
     state.world.centerX,
@@ -27,7 +28,6 @@ var Level = function (state, texture, options) {
   this.sprite.inputEnabled = true;
 
   this.sprite.events.onInputDown.add(this.placeLamp, this);
-
 }
 
 /**
