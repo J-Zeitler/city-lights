@@ -11,7 +11,7 @@ var ScoreKeeper = function (state, referenceTexture, options) {
   this.state = state;
   this.opts = options || {};
   this.winThreshold = this.opts.winThreshold || 100;
-  this.updateFrequency = this.opts.updateFrequency || 0.5; // updates per sec.
+  this.updateFrequency = this.opts.updateFrequency || 1.0; // updates per sec.
 
   this.score = 0;
   this.scoreSubscribers = [];
@@ -23,11 +23,17 @@ var ScoreKeeper = function (state, referenceTexture, options) {
   // TODO: this is a global assume, feels dirty
   this.canvas = document.getElementsByTagName('canvas')[0];
   this.canvasImg = new Image();
+
+  // this.diffImg = new Image();
+  // document.getElementsByTagName('body')[0].appendChild(this.diffImg);
+};
+
+ScoreKeeper.prototype.start = function () {
   this.keepScore();
 };
 
 /**
- * Score calculator using Resemble.js to match two images.
+ * Score calculator using a modified Resemble.js to match two images.
  */
 ScoreKeeper.prototype.keepScore = function () {
   this.canvasImg.src = this.canvas.toDataURL();
@@ -37,10 +43,15 @@ ScoreKeeper.prototype.keepScore = function () {
 ScoreKeeper.prototype._compareAndUpdate = function () {
   var self = this;
   resemble(this.refImg).compareTo(this.canvasImg.src).onComplete(function(data){
-    self.score = Math.ceil(self.winThreshold - parseFloat(data.misMatchPercentage));
+    var matchPercent = 100 - parseFloat(data.misMatchPercentage);
+    var matchScaled = 100*matchPercent/self.winThreshold;
+    self.score = Math.ceil(matchScaled);
+
+    // var diffSrc = data.getImageDataUrl();
+    // self.diffImg.src = diffSrc;
 
     self._notifyScoreSubscribers();
-    if (self.score >= self.winThreshold) {
+    if (self.score >= 100) {
       self._notifyWinSubscribers();
     }
 
@@ -58,8 +69,9 @@ ScoreKeeper.prototype.onScoreUpdate = function (fn, ctx) {
 };
 
 ScoreKeeper.prototype._notifyScoreSubscribers = function () {
+  var self = this;
   this.scoreSubscribers.forEach(function (s) {
-    s.fn.call(s.ctx, this.score);
+    s.fn.call(s.ctx, self.score);
   });
 };
 
@@ -68,7 +80,8 @@ ScoreKeeper.prototype.onWin = function (fn, ctx) {
 };
 
 ScoreKeeper.prototype._notifyWinSubscribers = function () {
+  var self = this;
   this.winSubscribers.forEach(function (s) {
-    s.fn.call(s.ctx, this.score);
+    s.fn.call(s.ctx, self.score);
   });
 };

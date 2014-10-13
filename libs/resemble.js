@@ -412,8 +412,11 @@ URL: https://github.com/Huddle/Resemble.js
 
         if (pixel1.a < 1.0) return; // outside of level
         ++fullAlphaPixels;
-        var nonBlack = pixel2.r*pixel2.g*pixel2.b;
-        mismatchCount += nonBlack ? 0 : 1;
+        if (pixel2.r <= 0 && pixel2.g <= 0 && pixel2.b <= 0) {
+          ++mismatchCount;
+          errorPixel(targetPix, offset, pixel1, pixel2);
+        }
+
 
         // if (ignoreColors){
 
@@ -452,20 +455,20 @@ URL: https://github.com/Huddle/Resemble.js
 
       });
 
-      data.misMatchPercentage = (mismatchCount / fullAlphaPixels * 100).toFixed(2);
+      data.misMatchPercentage = (100*mismatchCount / fullAlphaPixels).toFixed(2);
       data.analysisTime = Date.now() - time;
 
-      // data.getImageDataUrl = function(text){
-      //   var barHeight = 0;
+      data.getImageDataUrl = function(text){
+        var barHeight = 0;
 
-      //   if(text){
-      //     barHeight = addLabel(text,context,hiddenCanvas);
-      //   }
+        if(text){
+          barHeight = addLabel(text,context,hiddenCanvas);
+        }
 
-      //   context.putImageData(imgd, 0, barHeight);
+        context.putImageData(imgd, 0, barHeight);
 
-      //   return hiddenCanvas.toDataURL("image/png");
-      // };
+        return hiddenCanvas.toDataURL("image/png");
+      };
     }
 
     function addLabel(text, context, hiddenCanvas){

@@ -4,26 +4,30 @@ var MenuState = function (game) { };
 
 MenuState.prototype = {
   preload: function () {
-    this.load.image('lamp', 'assets/lamp.png');
+    this.load.image('menuPlayButton', 'assets/menu/menuPlayButton.png');
+    this.load.image('menuBG', 'assets/menu/menuBG.png');
   },
 
   create:  function () {
-    this.text = game.add.text(
-      game.world.centerX - 75,
-      game.world.centerY - 100,
-      "City Lights", {
-        fill: '#c4c433'
-      }
+    this.bg = this.add.sprite(
+      this.world.centerX,
+      this.world.centerY,
+      'menuBG'
     );
+    this.bg.anchor.setTo(0.5, 0.5);
+
     this.button = game.add.button(
-      game.world.centerX - 15,
-      game.world.centerY - 15,
-      'lamp', this.startGame
+      game.world.centerX,
+      game.world.centerY + 50,
+      'menuPlayButton',
+      this.startGame
     );
+    this.button.anchor.setTo(0.5, 0.5);
+    this.button.input.useHandCursor = true;
   },
 
   startGame: function () {
-    this.game.state.start('TestLevelState');
+    this.game.state.start('Level0State');
   },
 
   update:  function () {}

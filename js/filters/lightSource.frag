@@ -74,7 +74,7 @@ void main(void) {
     // Raycast :|
     for (float i = 0.0; i < 1.0; i += 0.005) {
       vec4 sample = texture2D(uSampler, vTextureCoord + toCenterTex*i);
-      lightColor.a *= sample.a;
+      lightColor.a *= (sample.a + 0.01);
     }
 
     lightColor.a *= 1.0 - (d/radius)*(d/radius);
