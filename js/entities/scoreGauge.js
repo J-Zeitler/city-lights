@@ -17,21 +17,21 @@ var ScoreGauge = function (state, scoreKeeper, winCallback) {
   this.winCallback = winCallback;
 
   this.container = state.add.sprite(
-    state.world.centerX - 50,
+    state.world.width - 10,
     10,
     'scoreGauge'
   );
-  this.container.anchor.setTo(0.5, 0.5);
+  this.container.anchor.setTo(1.0, 0.5);
 
   this.fill = state.add.sprite(
-    state.world.centerX - this.container.width/2 + 14 - 50,
+    state.world.width - this.container.width + 4,
     10,
     'scoreGaugeFill'
   );
   this.fill.anchor.setTo(0.0, 0.5);
 
   this.textBox = state.add.text(
-    state.world.centerX - 50,
+    state.world.width - this.container.width/2 - 10,
     3, "0%", {
     font: "bold 12px monospace",
     fill: "#111",

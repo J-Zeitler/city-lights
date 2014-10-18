@@ -11,7 +11,7 @@ Level5State.prototype = {
   create: function () {
     var self = this;
 
-    this.state.add('TestLevelState', TestLevelState);
+    this.state.add('MenuState', MenuState);
     this.scoreKeeper = new ScoreKeeper(this, 'level5', {
       winThreshold: 100
     });
@@ -38,7 +38,7 @@ Level5State.prototype = {
 };
 
 Level5State.prototype.finish = function () {
-  self.game.state.start('TestLevelState');
+  self.game.state.start('MenuState');
 };
 
 /**

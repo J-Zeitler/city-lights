@@ -76,7 +76,7 @@ Level.prototype.placeLamp = function () {
 
 Level.prototype.initRemainingLamps = function () {
   this.state.add.text(
-    this.state.world.width - 75 - 20*(this.lampsLimit + 1),
+    0,
     5, "Lamps left: ", {
       font: "bold 12px monospace",
       fill: "#fff",
@@ -85,7 +85,7 @@ Level.prototype.initRemainingLamps = function () {
   });
   for (var i = 0; i < this.lampsLimit; ++i) {
     var remainingLamp = this.state.add.sprite(
-      this.state.world.width - 20*(i + 1),
+      75 + 20*(i + 1),
       12,
       'lamp'
     );
