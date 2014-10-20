@@ -28,7 +28,7 @@ Level0State.prototype = {
   },
 
   render: function () {
-    game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
+    // game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
   },
 
   createNextButton: function () {
@@ -56,7 +56,8 @@ Level0State.prototype = {
 Level0State.prototype.checkpoint0 = function () {
   this.dBox = new DialogueBox(
       this,
-      "Damnit! a total blackout. Luckily I have a backup generator. Would you start it for me?"
+      "Damnit! a total blackout. Luckily I have a backup generator. Would you start it for me?",
+      {speed: 15}
     );
   this.dBox.reveal();
   this.dBox.onRevealed(this.checkpoint1, this);

@@ -19,11 +19,11 @@ Level4State.prototype = {
     this.level = new Level(this, 'level4', {
       lampsLimit: 3,
       lightRadius: 130,
+      lampsLocked: true
     });
 
     this.scoreGauge = new ScoreGauge(this, this.scoreKeeper, this.finish);
     this.checkpoint0();
-    this.scoreKeeper.start();
   },
 
   update: function () {
@@ -31,7 +31,7 @@ Level4State.prototype = {
   },
 
   render: function () {
-    game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
+    // game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
   }
 };
 
@@ -42,10 +42,24 @@ Level4State.prototype.finish = function () {
 /**
  * Checkpoints
  */
+
 Level4State.prototype.checkpoint0 = function () {
+  var self = this;
+
   this.dBox = new DialogueBox(
-      this,
-      "level 4"
-    );
+    this,
+    "This is the railway station. Watch your step"
+  );
   this.dBox.reveal();
+
+  this.dBox.onRevealed(function () {
+    self.level.unlockLamps();
+    self.level.sprite.events.onInputDown.add(self.checkpoint1, self);
+  });
+};
+
+Level4State.prototype.checkpoint1 = function () {
+  this.level.sprite.events.onInputDown.remove(this.checkpoint1, this);
+  this.dBox.box.destroy(true);
+  this.scoreKeeper.start();
 };

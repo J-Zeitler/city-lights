@@ -24,12 +24,12 @@ Level3State.prototype = {
   },
 
   render: function () {
-    game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
+    // game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
   }
 };
 
 Level3State.prototype.finish = function () {
-  self.game.state.start('MenuState');
+  self.game.state.start('Level4State');
 };
 
 /**

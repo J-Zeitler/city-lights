@@ -24,6 +24,7 @@ var game = new Phaser.Game(480, 320, Phaser.WEBGL, 'City Lights', {
     this.load.script('ScoreKeeper', 'js/entities/scoreKeeper.js');
 
     // Load states
+    this.load.script('IntroState', 'js/states/introState.js');
     this.load.script('MenuState', 'js/states/menuState.js');
     this.load.script('Level0State', 'js/states/level0State.js');
     this.load.script('Level1State', 'js/states/level1State.js');
@@ -37,6 +38,7 @@ var game = new Phaser.Game(480, 320, Phaser.WEBGL, 'City Lights', {
 
   create: function () {
     // Attach states
+    this.state.add('IntroState', IntroState);
     this.state.add('MenuState', MenuState);
     this.state.add('Level0State', Level0State);
     this.state.add('Level1State', Level1State);
@@ -45,7 +47,7 @@ var game = new Phaser.Game(480, 320, Phaser.WEBGL, 'City Lights', {
     this.state.add('Level4State', Level4State);
     this.state.add('Level5State', Level5State);
 
-    this.state.start('Level5State');
+    this.state.start('IntroState');
   },
 
   update: function () {

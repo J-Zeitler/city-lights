@@ -33,7 +33,7 @@ Level5State.prototype = {
   },
 
   render: function () {
-    game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
+    // game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
   }
 };
 
@@ -49,7 +49,7 @@ Level5State.prototype.checkpoint0 = function () {
 
   this.dBox = new DialogueBox(
     this,
-    "Good Job, fresh air again. We're at the town square, I think ..."
+    "We have almost lit the entire city! It's just this large open space left"
   );
   this.dBox.reveal();
 
